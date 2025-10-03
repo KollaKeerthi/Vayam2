@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SME Invitation - {{questionTitle}}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8fafc;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .greeting {
+            font-size: 18px;
+            color: #374151;
+            margin-bottom: 25px;
+        }
+        
+        .invitation-text {
+            font-size: 16px;
+            color: #4b5563;
+            margin-bottom: 30px;
+        }
+        
+        .question-card {
+            background-color: #f8fafc;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+            border-left: 4px solid #667eea;
+        }
+        
+        .question-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        
+        .question-meta {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 15px;
+        }
+        
+        .question-description {
+            font-size: 15px;
+            color: #4b5563;
+            line-height: 1.6;
+        }
+        
+        .capabilities {
+            background-color: #ecfdf5;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .capabilities h3 {
+            font-size: 16px;
+            color: #065f46;
+            margin-bottom: 15px;
+        }
+        
+        .capabilities ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .capabilities li {
+            font-size: 14px;
+            color: #047857;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .capabilities li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            color: #10b981;
+        }
+        
+        .cta-section {
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            text-align: center;
+            transition: transform 0.2s ease;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+        
+        .secondary-info {
+            background-color: #fef3c7;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .secondary-info h4 {
+            font-size: 15px;
+            color: #92400e;
+            margin-bottom: 10px;
+        }
+        
+        .secondary-info p {
+            font-size: 14px;
+            color: #b45309;
+        }
+        
+        .footer {
+            background-color: #f9fafb;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .footer p {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 5px;
+        }
+        
+        .footer-links {
+            margin-top: 15px;
+        }
+        
+        .footer-links a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 13px;
+            margin: 0 10px;
+        }
+        
+        .divider {
+            height: 1px;
+            background-color: #e5e7eb;
+            margin: 30px 0;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+            
+            .header, .content, .footer {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .question-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 SME Invitation</h1>
+            <p>You've been selected as a Subject Matter Expert</p>
+        </div>
+        
+        <div class="content">
+            <div class="greeting">
+                Hello,
+            </div>
+            
+            <div class="invitation-text">
+                You have been invited to contribute as a <strong>Subject Matter Expert (SME)</strong> to an important question that could benefit from your expertise and insights.
+            </div>
+            
+            <div class="question-card">
+                <div class="question-title">{{questionTitle}}</div>
+                <div class="question-meta">Question ID: #{{questionId}} • Private Question</div>
+                {{#if questionDescription}}
+                <div class="question-description">{{questionDescription}}</div>
+                {{/if}}
+            </div>
+            
+            <div class="capabilities">
+                <h3>As an SME, you can:</h3>
+                <ul>
+                    <li>Submit detailed solutions based on your expertise</li>
+                    <li>Add pros and cons to existing solutions</li>
+                    <li>Vote on solutions to help identify the best approaches</li>
+                    <li>Engage in meaningful discussions with other experts</li>
+                    <li>Help shape the best possible outcome for this challenge</li>
+                </ul>
+            </div>
+            
+            <div class="cta-section">
+                <a href="{{questionUrl}}" class="cta-button">
+                    🚀 View Question & Contribute
+                </a>
+            </div>
+            
+            <div class="secondary-info">
+                <h4>📋 What happens next?</h4>
+                <p>Click the button above to access the question. You'll be able to review all details and start contributing your expertise immediately.</p>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <div class="invitation-text" style="margin-bottom: 0;">
+                If you have any questions about this invitation or need assistance, please don't hesitate to contact our support team.
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>This invitation was sent from Vayam AI Platform</p>
+            <p>This is an automated email. Please do not reply to this message.</p>
+            <div class="footer-links">
+                <a href="{{platformUrl}}">Visit Platform</a> •
+                <a href="{{supportUrl}}">Get Support</a> •
+                <a href="{{unsubscribeUrl}}">Unsubscribe</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
