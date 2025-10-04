@@ -159,9 +159,9 @@ export const authOptions: NextAuthConfig = {
     },
 
     async redirect({ url, baseUrl }) {
-      // If it's a signout, redirect to home
+      // If it's a signout, redirect to signin
       if (url.includes('/api/auth/signout')) {
-        return baseUrl;
+        return baseUrl + '/signin';
       }
       // For sign-in, redirect to dashboard
       if (url.includes('/api/auth/signin') || url === baseUrl) {

@@ -18,7 +18,6 @@ import { toast } from "react-hot-toast"
 import {
   MessageSquare,
   Users,
-  Lock,
   Plus,
   Edit,
   Trash2,
@@ -129,10 +128,7 @@ function QuestionCard({
                 <Users className="w-3 h-3" />
                 <span>{question.participantCount}</span>
               </div>
-              <div className="flex items-center gap-1">
-                <Lock className="w-3 h-3 text-orange-600" />
-                <span>Private</span>
-              </div>
+             
               <div className="flex items-center gap-1">
                 <Clock className="w-3 h-3" />
                 <span>{new Date(question.createdAt).toLocaleDateString()}</span>
@@ -427,7 +423,7 @@ export default function AdminQuestionsDashboard() {
 
   if (status === "loading" || dashboardLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="h-full bg-background flex items-center justify-center">
         <LoaderOne />
       </div>
     )
@@ -453,9 +449,9 @@ export default function AdminQuestionsDashboard() {
   )
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-6 sm:py-8">
-        <div className="max-w-7xl mx-auto">
+    <div className="h-full bg-background">
+      <div className="container mx-auto px-4 py-6 sm:py-8 h-full">
+        <div className="max-w-7xl mx-auto h-full">
           {/* Header */}
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
             {selected && (
@@ -527,9 +523,7 @@ export default function AdminQuestionsDashboard() {
                 <Card className="border-border/50 shadow-sm">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-orange-500/10 rounded-lg">
-                        <Lock className="h-5 w-5 text-orange-600" />
-                      </div>
+                     
                       <div>
                         <p className="text-2xl font-bold text-foreground">{totalStats.privateQuestions}</p>
                         <p className="text-sm text-muted-foreground">Private Questions</p>
@@ -652,7 +646,7 @@ export default function AdminQuestionsDashboard() {
                         <p className="text-sm text-muted-foreground">Created</p>
                       </div>
                       <div className="text-center p-4 bg-muted/30 rounded-xl">
-                        <Lock className="h-6 w-6 text-orange-600 mx-auto mb-2" />
+                        
                         <p className="text-sm font-bold text-foreground">Private</p>
                         <p className="text-sm text-muted-foreground">Visibility</p>
                       </div>

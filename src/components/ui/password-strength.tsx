@@ -39,12 +39,6 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
   const passedCriteria = criteria.filter((criterion) => criterion.test(password));
   const strength = (passedCriteria.length / criteria.length) * 100;
 
-  const getStrengthColor = () => {
-    if (strength < 40) return "bg-destructive";
-    if (strength < 70) return "bg-yellow-500";
-    return "bg-green-500";
-  };
-
   const getStrengthLabel = () => {
     if (strength < 40) return "Weak";
     if (strength < 70) return "Medium";

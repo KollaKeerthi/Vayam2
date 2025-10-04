@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
           supportUrl: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/support`,
           unsubscribeUrl: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/unsubscribe?email=${encodeURIComponent(email)}`
         });
-        console.log(`SME invitation sent successfully to ${email}`);
+        // SME invitation sent successfully
       } catch (error) {
         console.error(`Failed to send SME invitation to ${email}:`, error);
         // Don't fail the entire request if email fails
@@ -187,17 +187,15 @@ export async function GET() {
       });
     }
 
-    // Filter questions based on user access (all questions are private)
+    // Filter questions based on user access
     const accessibleQuestions = allQuestions.filter(question => {
       const isAdmin = isAdminUser(session.user?.email);
       
       // Admins can see all questions (active and inactive)
       if (isAdmin) return true;
       
-      // Regular users can only see active questions they have access to
-      if (!question.isActive) return false;
-      
-      return (question.allowedEmails || []).includes(session.user?.email || "");
+      // Regular users can see all active questions (not just allowed emails)
+      return question.isActive;
     });
 
     return NextResponse.json({

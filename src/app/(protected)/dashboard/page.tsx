@@ -1,124 +1,139 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { motion, AnimatePresence } from "framer-motion"
-import axios from "axios"
-import { useSession } from "next-auth/react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { CreateQuestion } from "@/components/questions/create-question"
-import { LoaderOne } from "@/components/ui/loader"
-import { 
-  Users, 
-  MessageCircle, 
-  Search,
-  Clock,
-  Globe,
-  Lock
-} from "lucide-react"
-import { isAdminUser } from "@/lib/admin"
-import { toast } from "react-hot-toast"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import axios from "axios";
+import { useSession } from "next-auth/react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { CreateQuestion } from "@/components/questions/create-question";
+import { LoaderOne } from "@/components/ui/loader";
+import { Users, MessageCircle, Search, Clock } from "lucide-react";
+import { isAdminUser } from "@/lib/admin";
+import { toast } from "react-hot-toast";
 
 interface Question {
-  id: number
-  title: string
-  description: string
-  tags: string[]
-  participantCount: number
-  allowedEmails: string[]
-  owner: number
-  isActive: boolean
-  isPublic: boolean
-  createdAt: string
-  updatedAt: string
-  ownerEmail: string
-  ownerUsername: string | null
+  id: number;
+  title: string;
+  description: string;
+  tags: string[];
+  participantCount: number;
+  allowedEmails: string[];
+  owner: number;
+  isActive: boolean;
+  isPublic: boolean;
+  createdAt: string;
+  updatedAt: string;
+  ownerEmail: string;
+  ownerUsername: string | null;
 }
 
 export default function DashboardPage() {
-  const router = useRouter()
-  const { data: session } = useSession()
-  const [questions, setQuestions] = useState<Question[]>([])
-  const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [searchQuery, setSearchQuery] = useState("")
+  const router = useRouter();
+  const { data: session } = useSession();
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [filteredQuestions, setFilteredQuestions] = useState<Question[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   // Check if user is admin
-  const isAdmin = isAdminUser(session?.user?.email)
+  const isAdmin = isAdminUser(session?.user?.email);
 
   useEffect(() => {
     async function fetchQuestions() {
-      setLoading(true)
+      setLoading(true);
       try {
-        const response = await axios.get("/api/questions")
+        const response = await axios.get("/api/questions");
         if (response.data.success) {
-          const questionsData = response.data.data || []
-          setQuestions(questionsData)
-          setFilteredQuestions(questionsData)
+          const questionsData = response.data.data || [];
+          // Filter out inactive questions
+          const activeQuestions = questionsData.filter(
+            (question: Question) => question.isActive
+          );
+          setQuestions(activeQuestions);
+          setFilteredQuestions(activeQuestions);
         } else {
           // Handle API error response
-          const errorMessage = response.data.message || response.data.error || "Failed to fetch questions"
+          const errorMessage =
+            response.data.message ||
+            response.data.error ||
+            "Failed to fetch questions";
           if (response.data.data && Array.isArray(response.data.data)) {
-            // If we have data but success is false, still show the data
-            setQuestions(response.data.data)
-            setFilteredQuestions(response.data.data)
+            // If we have data but success is false, still show the data but filter out inactive ones
+            const activeQuestions = response.data.data.filter(
+              (question: Question) => question.isActive
+            );
+            setQuestions(activeQuestions);
+            setFilteredQuestions(activeQuestions);
           } else {
-            setError(errorMessage)
+            setError(errorMessage);
           }
         }
-        setError(null)
+        setError(null);
       } catch (err: unknown) {
-        console.error("Error fetching questions:", err)
-        const error = err as { response?: { data?: { error?: string; message?: string } } }
-        const errorMessage = error?.response?.data?.error || error?.response?.data?.message || "Failed to fetch questions"
-        setError(errorMessage)
+        console.error("Error fetching questions:", err);
+        const error = err as {
+          response?: { data?: { error?: string; message?: string } };
+        };
+        const errorMessage =
+          error?.response?.data?.error ||
+          error?.response?.data?.message ||
+          "Failed to fetch questions";
+        setError(errorMessage);
         // Don't show toast for empty state
         if (!error?.response?.data?.message?.includes("No questions")) {
-          toast.error("Failed to load questions")
+          toast.error("Failed to load questions");
         }
       } finally {
-        setLoading(false)
+        setLoading(false);
+        setHasInitialized(true);
       }
     }
-    
-    if (session) {
-      fetchQuestions()
-    }
-  }, [session])
 
-  // Filter questions based on search query
+    // Only fetch data once when session is available and we haven't initialized yet
+    if (session && !hasInitialized) {
+      fetchQuestions();
+    }
+  }, [session, hasInitialized]);
+
+  // Filter questions based on search query (questions are already filtered to show only active ones)
   useEffect(() => {
     if (!searchQuery.trim()) {
-      setFilteredQuestions(questions)
+      setFilteredQuestions(questions);
     } else {
       const filtered = questions.filter(
         (question) =>
           question.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          question.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          question.tags?.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-      )
-      setFilteredQuestions(filtered)
+          question.description
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          question.tags?.some((tag) =>
+            tag.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+      );
+      setFilteredQuestions(filtered);
     }
-  }, [searchQuery, questions])
+  }, [searchQuery, questions]);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="h-full bg-background flex items-center justify-center">
         <LoaderOne />
       </div>
-    )
+    );
   }
 
   if (!session) {
-    router.push("/signin")
-    return null
+    router.push("/signin");
+    return null;
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="h-full bg-background flex flex-col">
       {/* Header Section */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -144,7 +159,8 @@ export default function DashboardPage() {
                 transition={{ delay: 0.2, duration: 0.5 }}
                 className="text-muted-foreground max-w-2xl leading-relaxed"
               >
-                Thank you for being a valuable member. Explore civic questions and contribute to meaningful discussions.
+                Thank you for being a valuable member. Explore civic questions
+                and contribute to meaningful discussions.
               </motion.p>
             </div>
 
@@ -165,34 +181,32 @@ export default function DashboardPage() {
                   className="pl-10 bg-background border-border/50 focus:border-primary/50"
                 />
               </div>
-              
-              {/* Create Question Button - Admin Only */}
-              {isAdmin && <CreateQuestion />}
             </motion.div>
           </div>
         </div>
       </motion.div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
-        {/* Error State */}
-        {error && !error.includes("No questions") && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-center text-destructive mb-8"
-          >
-            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 max-w-md mx-auto">
-              <p>{error}</p>
-            </div>
+      <div className="flex-1 overflow-auto">
+        <div className="container mx-auto px-4 py-8">
+          {/* Error State */}
+          {error && !error.includes("No questions") && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center text-destructive mb-8"
+            >
+              <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 max-w-md mx-auto">
+                <p>{error}</p>
+              </div>
           </motion.div>
         )}
 
         {/* Questions Grid */}
         {filteredQuestions.length === 0 ? (
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             className="text-center py-12"
           >
             <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
@@ -200,12 +214,11 @@ export default function DashboardPage() {
               {searchQuery ? "No questions found" : "No questions available"}
             </h3>
             <p className="text-muted-foreground">
-              {searchQuery 
-                ? "Try adjusting your search terms" 
-                : isAdmin 
-                  ? "Create your first question to get started" 
-                  : "Check back later for new questions"
-              }
+              {searchQuery
+                ? "Try adjusting your search terms"
+                : isAdmin
+                ? "Create your first question to get started"
+                : "Check back later for new questions"}
             </p>
             {isAdmin && !searchQuery && (
               <div className="mt-6">
@@ -235,17 +248,6 @@ export default function DashboardPage() {
                         <CardTitle className="text-lg font-semibold leading-tight line-clamp-2 text-foreground group-hover:text-primary transition-colors flex-1">
                           {question.title}
                         </CardTitle>
-                        <div className="flex items-center gap-1">
-                          {question.isPublic ? (
-                            <div title="Public question">
-                              <Globe className="h-4 w-4 text-green-500" />
-                            </div>
-                          ) : (
-                            <div title="Private question">
-                              <Lock className="h-4 w-4 text-orange-500" />
-                            </div>
-                          )}
-                        </div>
                       </div>
                       <p className="text-sm text-muted-foreground line-clamp-2 group-hover:text-foreground/80 transition-colors">
                         {question.description}
@@ -293,28 +295,15 @@ export default function DashboardPage() {
                       )}
 
                       {/* SME Info for Private Questions */}
-                      {!question.isPublic && question.allowedEmails.length > 0 && (
-                        <div className="text-xs text-muted-foreground bg-muted/30 rounded-md p-2">
-                          <span className="font-medium">SME Access:</span> {question.allowedEmails.length} expert{question.allowedEmails.length !== 1 ? 's' : ''} invited
-                        </div>
-                      )}
-
-                      {/* Footer */}
-                      <div className="flex items-center justify-between pt-2 border-t border-border/20">
-                        <span className="text-xs text-muted-foreground group-hover:text-foreground/70 transition-colors">
-                          Join discussion
-                        </span>
-                        <div className="flex items-center gap-2">
-                          {!question.isActive && (
-                            <Badge variant="secondary" className="text-xs">
-                              Inactive
-                            </Badge>
-                          )}
-                          <span className="text-xs text-muted-foreground">
-                            by {question.ownerUsername || question.ownerEmail}
-                          </span>
-                        </div>
-                      </div>
+                      {!question.isPublic &&
+                        question.allowedEmails.length > 0 && (
+                          <div className="text-xs text-muted-foreground bg-muted/30 rounded-md p-2">
+                            <span className="font-medium">SME Access:</span>{" "}
+                            {question.allowedEmails.length} expert
+                            {question.allowedEmails.length !== 1 ? "s" : ""}{" "}
+                            invited
+                          </div>
+                        )}
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -322,7 +311,8 @@ export default function DashboardPage() {
             </AnimatePresence>
           </div>
         )}
+        </div>
       </div>
     </div>
-  )
+  );
 }

@@ -7,8 +7,10 @@ import {
   boolean,
   integer,
   smallint,
+  unique,
+  check,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 // Users table with timestamp instead of bigint
 export const users = pgTable("users", {
@@ -70,27 +72,41 @@ export const cons = pgTable("cons", {
 });
 
 // Votes table (user votes on solutions, pros, and cons)
+// Each vote must reference exactly one item: solution OR pros OR cons
 export const votes = pgTable("votes", {
   id: serial("id").primaryKey(),
-  questionId: integer("question_id").references(() => questions.id),
+  questionId: integer("question_id").references(() => questions.id).notNull(),
   solutionId: integer("solution_id").references(() => solutions.id),
   prosId: integer("pros_id").references(() => pros.id),
   consId: integer("cons_id").references(() => cons.id),
   userId: integer("user_id").references(() => users.uid).notNull(),
-  vote: smallint("vote").notNull(), // 1 for upvote, -1 for downvote
+  vote: smallint("vote").notNull(), // 1 for upvote, 0 for neutral, -1 for downvote
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
-});
+}, (table) => ({
+  // Ensure exactly one of solutionId, prosId, or consId is set
+  checkExactlyOneReference: check("exactly_one_reference", 
+    sql`(
+      (${table.solutionId} IS NOT NULL AND ${table.prosId} IS NULL AND ${table.consId} IS NULL) OR
+      (${table.solutionId} IS NULL AND ${table.prosId} IS NOT NULL AND ${table.consId} IS NULL) OR
+      (${table.solutionId} IS NULL AND ${table.prosId} IS NULL AND ${table.consId} IS NOT NULL)
+    )`
+  ),
+  // Ensure each user can only vote once per item
+  uniqueUserVote: unique().on(table.userId, table.solutionId, table.prosId, table.consId),
+}));
 
 // Participants table (tracks user engagement)
 export const participants = pgTable("participants", {
   id: serial("id").primaryKey(),
   questionId: integer("question_id").references(() => questions.id).notNull(),
   userId: integer("user_id").references(() => users.uid).notNull(),
-  participationType: varchar("participation_type", { length: 50 }).notNull(), // "solution", "pro", "con", "vote"
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
-});
+}, (table) => ({
+  // Unique constraint to ensure one participation record per user per question
+  uniqueParticipation: unique().on(table.questionId, table.userId),
+}));
 
 // Relations for better querying
 export const usersRelations = relations(users, ({ many }) => ({

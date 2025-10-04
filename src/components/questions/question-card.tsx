@@ -111,23 +111,6 @@ export function QuestionCard({ question, index }: QuestionCardProps) {
               <span className="font-medium">SME Access:</span> {question.allowedEmails.length} expert{question.allowedEmails.length !== 1 ? 's' : ''} invited
             </div>
           )}
-
-          {/* Footer */}
-          <div className="flex items-center justify-between pt-2 border-t border-border/20">
-            <span className="text-xs text-muted-foreground group-hover:text-foreground/70 transition-colors">
-              Join discussion
-            </span>
-            <div className="flex items-center gap-2">
-              {!question.isActive && (
-                <Badge variant="secondary" className="text-xs">
-                  Inactive
-                </Badge>
-              )}
-              <span className="text-xs text-muted-foreground">
-                by {question.ownerUsername || question.ownerEmail}
-              </span>
-            </div>
-          </div>
         </CardContent>
       </Card>
     </motion.div>

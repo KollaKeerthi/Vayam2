@@ -9,7 +9,6 @@ import {
   Menu,
   X,
   Home,
-  Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,21 +18,29 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { isAdminUser } from "@/lib/admin";
-import { CreateQuestion } from "@/components/questions/create-question";
 
 export default function Navbar() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isClientMounted, setIsClientMounted] = useState(false);
+
+  useEffect(() => {
+    setIsClientMounted(true);
+  }, []);
 
   const isAdmin = isAdminUser(session?.user?.email);
 
   const handleLogout = async () => {
     try {
-      await signOut({ callbackUrl: "/" });
+      await signOut({ redirect: false });
+      // Force a hard redirect to ensure session is cleared
+      window.location.replace("/signin");
     } catch (error) {
       console.error("Logout error:", error);
+      // Fallback to direct redirect even if signOut fails
+      window.location.replace("/signin");
     }
   };
 
@@ -68,7 +75,15 @@ export default function Navbar() {
             </motion.div>
 
             <div className="hidden md:flex items-center space-x-2">
-              {!session?.user ? (
+              {!isClientMounted ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-foreground"></div>
+                </div>
+              ) : status === "loading" ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-foreground"></div>
+                </div>
+              ) : !session?.user ? (
                 <div className="flex items-center space-x-3">
                   <Button
                     variant="ghost"
@@ -88,11 +103,6 @@ export default function Navbar() {
                 </div>
               ) : (
                 <div className="flex items-center space-x-2">
-                  {/* Admin Create Question Button */}
-                  {isAdmin && (
-                    <CreateQuestion />
-                  )}
-                  
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
@@ -100,14 +110,14 @@ export default function Navbar() {
                         size="sm"
                         className="h-9 w-9 rounded-full hover:bg-muted/80 transition-all duration-200 ring-2 ring-transparent hover:ring-border/50"
                       >
-                        <User className="h-4 w-4" />
+                        <Menu className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
                       align="end"
-                      className="w-64 animate-scale-in shadow-lg border-border/50 bg-card/95 backdrop-blur-sm"
+                      className="w-64 animate-scale-in shadow-lg border-border/50 bg-card/95 backdrop-blur-sm p-2"
                     >
-                      <div className="px-3 py-2 border-b border-border/50">
+                      <div className="px-3 py-3 border-b border-border/50 mb-1">
                         <p className="text-sm font-medium text-foreground">
                           {session?.user?.name || "User"}
                         </p>
@@ -123,11 +133,11 @@ export default function Navbar() {
 
                       <DropdownMenuItem
                         asChild
-                        className="hover:bg-muted/80 transition-colors"
+                        className="hover:bg-muted/80 transition-colors rounded-md my-1"
                       >
                         <Link
                           href="/dashboard"
-                          className="flex items-center gap-3 py-2"
+                          className="flex items-center gap-3 px-3 py-2"
                         >
                           <Home className="h-4 w-4" />
                           Dashboard
@@ -136,11 +146,11 @@ export default function Navbar() {
                       
                       <DropdownMenuItem
                         asChild
-                        className="hover:bg-muted/80 transition-colors"
+                        className="hover:bg-muted/80 transition-colors rounded-md my-1"
                       >
                         <Link
                           href="/profile"
-                          className="flex items-center gap-3 py-2"
+                          className="flex items-center gap-3 px-3 py-2"
                         >
                           <User className="h-4 w-4" />
                           Profile
@@ -149,43 +159,31 @@ export default function Navbar() {
                       
                       {isAdmin && (
                         <>
-                          <DropdownMenuSeparator className="bg-border/50" />
-                          <div className="px-3 py-1">
+                          <DropdownMenuSeparator className="bg-border/50 my-2" />
+                          <div className="px-3 py-1 mb-1">
                             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                               Admin Actions
                             </p>
                           </div>
                           <DropdownMenuItem
                             asChild
-                            className="hover:bg-muted/80 transition-colors"
+                            className="hover:bg-muted/80 transition-colors rounded-md my-1"
                           >
                             <Link
                               href="/admin/questions"
-                              className="flex items-center gap-3 py-2"
+                              className="flex items-center gap-3 px-3 py-2"
                             >
                               <MessageSquare className="h-4 w-4" />
                               Manage Questions
                             </Link>
                           </DropdownMenuItem>
-                          <DropdownMenuItem
-                            asChild
-                            className="hover:bg-muted/80 transition-colors"
-                          >
-                            <Link
-                              href="/admin/settings"
-                              className="flex items-center gap-3 py-2"
-                            >
-                              <Settings className="h-4 w-4" />
-                              Admin Settings
-                            </Link>
-                          </DropdownMenuItem>
                         </>
                       )}
                       
-                      <DropdownMenuSeparator className="bg-border/50" />
+                      <DropdownMenuSeparator className="bg-border/50 my-2" />
                       <DropdownMenuItem
                         onClick={handleLogout}
-                        className="flex items-center gap-3 py-2 text-destructive hover:text-destructive hover:bg-destructive/10 transition-colors"
+                        className="flex items-center gap-3 px-3 py-2 text-destructive hover:text-destructive hover:bg-destructive/10 transition-colors rounded-md my-1"
                       >
                         <LogOut className="h-4 w-4" />
                         Logout
@@ -269,7 +267,15 @@ export default function Navbar() {
                 )}
 
                 <div className="flex-1 py-6 px-4 space-y-1">
-                  {!session?.user ? (
+                  {!isClientMounted ? (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-foreground"></div>
+                    </div>
+                  ) : status === "loading" ? (
+                    <div className="flex items-center justify-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-foreground"></div>
+                    </div>
+                  ) : !session?.user ? (
                     <>
                       <Button
                         variant="ghost"
@@ -339,9 +345,6 @@ export default function Navbar() {
                             <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                               Admin Actions
                             </p>
-                          </div>
-                          <div className="mb-4">
-                            <CreateQuestion />
                           </div>
                           <Button
                             variant="ghost"
