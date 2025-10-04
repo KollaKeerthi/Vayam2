@@ -27,7 +27,10 @@ export class EmailTemplateProcessor {
       
       return templateContent;
     } catch (error) {
-      console.error(`Error reading template ${templateName}:`, error);
+      // Template reading error logged in development only
+      if (process.env.NODE_ENV === 'development') {
+        console.error(`Error reading template ${templateName}:`, error);
+      }
       throw new Error(`Template ${templateName} not found`);
     }
   }
@@ -67,7 +70,10 @@ export class EmailTemplateProcessor {
       
       return template;
     } catch (error) {
-      console.error('Error rendering template:', error);
+      // Template rendering error logged in development only
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error rendering template:', error);
+      }
       throw error;
     }
   }
@@ -120,7 +126,10 @@ export class EmailNotifications {
       );
       return result;
     } catch (error) {
-      console.error('Error sending SME invitation:', error);
+      // SME invitation error logged in development only
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error sending SME invitation:', error);
+      }
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error' 
@@ -139,7 +148,10 @@ export class EmailNotifications {
       );
       return result;
     } catch (error) {
-      console.error('Error sending welcome email:', error);
+      // Welcome email error logged in development only
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error sending welcome email:', error);
+      }
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error' 
@@ -158,7 +170,10 @@ export class EmailNotifications {
       );
       return result;
     } catch (error) {
-      console.error('Error sending solution notification:', error);
+      // Solution notification error logged in development only
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error sending solution notification:', error);
+      }
       return { 
         success: false, 
         error: error instanceof Error ? error.message : 'Unknown error' 

@@ -138,7 +138,10 @@ export const authOptions: NextAuthConfig = {
 
           token.userId = dbUser.uid.toString();
         } catch (error) {
-            console.error("JWT callback error:", error);
+            // JWT callback error logged in development only
+            if (process.env.NODE_ENV === 'development') {
+              console.error("JWT callback error:", error);
+            }
           throw new Error("Database error during authentication");
         }
       }

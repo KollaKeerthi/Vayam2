@@ -252,7 +252,10 @@ export async function GET(
       },
     })
   } catch (error) {
-    console.error("Error fetching question:", error)
+    // Question fetch error logged in development only
+    if (process.env.NODE_ENV === 'development') {
+      console.error("Error fetching question:", error)
+    }
     return NextResponse.json(
       {
         success: false,

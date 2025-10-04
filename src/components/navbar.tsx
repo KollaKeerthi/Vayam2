@@ -38,7 +38,10 @@ export default function Navbar() {
       // Force a hard redirect to ensure session is cleared
       window.location.replace("/signin");
     } catch (error) {
-      console.error("Logout error:", error);
+      // Logout error logged in development only
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Logout error:", error);
+      }
       // Fallback to direct redirect even if signOut fails
       window.location.replace("/signin");
     }

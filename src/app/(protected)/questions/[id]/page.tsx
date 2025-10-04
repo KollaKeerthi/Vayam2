@@ -16,8 +16,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Plus,
-  ThumbsUp,
-  ThumbsDown,
   MessageSquare,
   Users,
   Clock,

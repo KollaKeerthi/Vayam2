@@ -37,7 +37,10 @@ export const sendEmail = async (
     
     return { success: true, messageId: info.messageId };
   } catch (error) {
-    console.error("Error sending email:", error);
+    // Email error logged in development only
+    if (process.env.NODE_ENV === 'development') {
+      console.error("Error sending email:", error);
+    }
     return { 
       success: false, 
       error: error instanceof Error ? error.message : "Unknown email error"

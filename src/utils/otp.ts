@@ -27,7 +27,10 @@ export class OTPService {
       const key = this.getOTPKey(email);
       await this.redis.setex(key, OTP_EXPIRY, otp);
     } catch (error) {
-      console.error('Failed to store OTP:', error);
+      // OTP storage error logged in development only
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to store OTP:', error);
+      }
       throw new Error('Failed to store OTP. Please try again.');
     }
   }
@@ -48,7 +51,10 @@ export class OTPService {
       await this.redis.del(key);
       return true;
     } catch (error) {
-      console.error('Failed to verify OTP:', error);
+      // OTP verification error logged in development only
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to verify OTP:', error);
+      }
       return false;
     }
   }
@@ -62,7 +68,10 @@ export class OTPService {
       const exists = await this.redis.exists(key);
       return exists === 1;
     } catch (error) {
-      console.error('Failed to check OTP existence:', error);
+      // OTP existence check error logged in development only
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to check OTP existence:', error);
+      }
       return false;
     }
   }
@@ -75,7 +84,10 @@ export class OTPService {
       const key = this.getOTPKey(email);
       return await this.redis.ttl(key);
     } catch (error) {
-      console.error('Failed to get OTP TTL:', error);
+      // OTP TTL error logged in development only
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to get OTP TTL:', error);
+      }
       return -1;
     }
   }

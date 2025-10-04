@@ -14,11 +14,11 @@ class RedisClient {
       if (redisUrl) {
         RedisClient.instance = new Redis(redisUrl, {
           maxRetriesPerRequest: 3,
-          lazyConnect: false, // Connect immediately to test auth
+          lazyConnect: true,
           enableReadyCheck: true,
           commandTimeout: 5000,
           connectTimeout: 10000,
-          family: 4, // Force IPv4
+          family: 4,
         });
       } else if (redisPassword) {
         // Fallback to individual connection parameters with password
@@ -26,21 +26,20 @@ class RedisClient {
           host: 'redis-11215.c262.us-east-1-3.ec2.redns.redis-cloud.com',
           port: 11215,
           password: redisPassword,
-          username: 'default', // Explicitly set username
+          username: 'default',
           maxRetriesPerRequest: 3,
-          lazyConnect: false, // Connect immediately to test auth
+          lazyConnect: true,
           enableReadyCheck: true,
           commandTimeout: 5000,
           connectTimeout: 10000,
-          family: 4, // Force IPv4
+          family: 4,
         });
       } else {
         throw new Error('Either REDIS_URL or REDIS_PASSWORD must be provided');
       }
 
       RedisClient.instance.on('error', (error) => {
-        // Only log Redis errors in production, not during build
-        if (process.env.NODE_ENV === 'production' && typeof window === 'undefined') {
+        if (process.env.NODE_ENV === 'development') {
           console.error('Redis connection error:', error);
         }
       });
@@ -74,8 +73,7 @@ class RedisClient {
       await redis.ping();
       return true;
     } catch (error) {
-      // Only log Redis test failures in production
-      if (process.env.NODE_ENV === 'production' && typeof window === 'undefined') {
+      if (process.env.NODE_ENV === 'development') {
         console.error('Redis connection test failed:', error);
       }
       return false;

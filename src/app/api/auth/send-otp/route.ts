@@ -68,7 +68,10 @@ export async function POST(request: NextRequest) {
     );
 
   } catch (error) {
-    console.error("Send OTP error:", error);
+    // Send OTP error logged in development only
+    if (process.env.NODE_ENV === 'development') {
+      console.error("Send OTP error:", error);
+    }
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

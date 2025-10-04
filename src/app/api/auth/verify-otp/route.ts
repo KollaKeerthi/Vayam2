@@ -49,7 +49,10 @@ export async function POST(request: NextRequest) {
     );
 
   } catch (error) {
-    console.error("Verify OTP error:", error);
+    // Verify OTP error logged in development only
+    if (process.env.NODE_ENV === 'development') {
+      console.error("Verify OTP error:", error);
+    }
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

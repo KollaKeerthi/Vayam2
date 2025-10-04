@@ -118,7 +118,10 @@ export async function POST(
     });
 
   } catch (error) {
-    console.error("Error adding con:", error);
+    // Add con error logged in development only
+    if (process.env.NODE_ENV === 'development') {
+      console.error("Error adding con:", error);
+    }
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(

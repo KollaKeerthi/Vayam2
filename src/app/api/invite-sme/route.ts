@@ -62,7 +62,10 @@ export async function POST(req: NextRequest) {
     const failed = results.length - successful;
     
     if (failed > 0) {
-      console.error(`${failed} email(s) failed to send`);
+      // Email sending failure logged in development only
+      if (process.env.NODE_ENV === 'development') {
+        console.error(`${failed} email(s) failed to send`);
+      }
       return NextResponse.json({
         success: false,
         message: `${successful} invitation(s) sent successfully, ${failed} failed`,
@@ -76,7 +79,10 @@ export async function POST(req: NextRequest) {
     });
 
   } catch (error) {
-    console.error("Error sending SME invitations:", error);
+    // SME invitation error logged in development only
+    if (process.env.NODE_ENV === 'development') {
+      console.error("Error sending SME invitations:", error);
+    }
     return NextResponse.json(
       { error: "Failed to send invitations" },
       { status: 500 }

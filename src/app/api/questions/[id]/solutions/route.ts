@@ -130,7 +130,10 @@ export async function POST(
     });
 
   } catch (error) {
-    console.error("Error adding solution:", error);
+    // Add solution error logged in development only
+    if (process.env.NODE_ENV === 'development') {
+      console.error("Error adding solution:", error);
+    }
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(

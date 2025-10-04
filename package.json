@@ -29,7 +29,6 @@
     "input-otp": "^1.4.2",
     "ioredis": "^5.8.0",
     "lucide-react": "^0.544.0",
-    "motion": "^12.23.22",
     "next": "15.5.4",
     "next-auth": "^5.0.0-beta.29",
     "nodemailer": "^6.10.1",
