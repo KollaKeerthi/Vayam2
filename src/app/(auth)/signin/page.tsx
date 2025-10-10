@@ -66,10 +66,28 @@ export default function SignInPage() {
           toast.error(result.error);
         }
       } else if (result?.ok) {
-        toast.success("Welcome back! Redirecting to dashboard...");
-        setTimeout(() => {
-          window.location.href = "/dashboard";
-        }, 1000);
+        toast.success("Welcome back! Checking mobile verification...");
+        
+        // Check mobile verification status
+        try {
+          const response = await fetch('/api/auth/check-mobile-status');
+          const data = await response.json();
+          
+          if (data.needsMobileVerification) {
+            setTimeout(() => {
+              window.location.href = "/mobile-auth";
+            }, 1000);
+          } else {
+            setTimeout(() => {
+              window.location.href = "/dashboard";
+            }, 1000);
+          }
+        } catch {
+          // If check fails, redirect to dashboard anyway
+          setTimeout(() => {
+            window.location.href = "/dashboard";
+          }, 1000);
+        }
       } else {
         toast.error("Sign in failed. Please check your credentials and try again.");
       }

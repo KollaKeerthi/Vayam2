@@ -17,9 +17,11 @@ export const users = pgTable("users", {
   uid: serial("uid").primaryKey(),
   username: varchar("username", { length: 255 }).unique(),
   email: varchar("email", { length: 255 }).unique(),
+  mobile: varchar("mobile", { length: 15 }).unique(), // +91XXXXXXXXXX format
   pwhash: text("pwhash"), // bcrypt hash for email/password users (nullable for OAuth users)
   provider: varchar("provider", { length: 50 }).default("email"), // google, email
   isEmailVerified: boolean("is_email_verified").default(false),
+  isMobileVerified: boolean("is_mobile_verified").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

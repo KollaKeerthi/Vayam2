@@ -71,6 +71,7 @@ export async function POST(request: NextRequest) {
         pwhash: hashedPassword,
         provider: "email",
         isEmailVerified: false, // Will be verified via OTP
+        isMobileVerified: false,
       })
       .returning();
 

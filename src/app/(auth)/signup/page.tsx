@@ -224,13 +224,17 @@ export default function SignUpPage() {
               </Button>
             )}
             <CardTitle className="text-3xl font-bold tracking-tight text-primary">
-              {currentStep === "signup" ? "Create Account" : "Verify Email"}
+              {currentStep === "signup" ? "Create Account" 
+               : currentStep === "verify" ? "Verify Email" 
+               : "Add Mobile Number"}
             </CardTitle>
           </div>
           <CardDescription className="text-muted-foreground">
             {currentStep === "signup" 
               ? "Create your account to get started"
-              : "Enter the verification code sent to your email"
+              : currentStep === "verify" 
+              ? "Enter the verification code sent to your email"
+              : "Add your mobile number for better security (optional)"
             }
           </CardDescription>
         </CardHeader>
